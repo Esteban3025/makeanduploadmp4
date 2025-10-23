@@ -24,7 +24,7 @@ export async function convertAndUpload(hlsUrl, title = 'video') {
 
     const fileStream = fs.createReadStream(tempPath);
     const { error: uploadError } = await supabase.storage
-      .from('videos')
+      .from('videosclean')
       .upload(fileName, fileStream, {
         cacheControl: '3600',
         upsert: true,
@@ -36,7 +36,7 @@ export async function convertAndUpload(hlsUrl, title = 'video') {
 
   
     const { data, error: urlError } = supabase.storage
-      .from('videos')
+      .from('videosclean')
       .getPublicUrl(fileName);
 
     if (urlError) throw urlError;

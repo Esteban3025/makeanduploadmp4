@@ -1,49 +1,67 @@
 import { convertAndUpload } from './convertAndUpload.js';
+import { uploadImage } from './uploadImage.js';
 import { supabase } from './supabaseclient.js';
+
+let lastPostId = null;
+let mediaType = "";
 
 async function populateSubreddit(subreddit, limit = 10) {
   try {
-    const url = `https://www.reddit.com/r/${subreddit}/.json`;
+    const url = lastPostId 
+    ? `https://www.reddit.com/r/${subreddit}/new.json?limit=${limit}&after=${lastPostId}`
+    : `https://www.reddit.com/r/${subreddit}/new.json?limit=${limit}`;
     const response = await fetch(url);
     const data = await response.json();
     const posts = data.data.children;
 
+    if (posts.length > 0) {
+      lastPostId = data.data.after; // guarda para la próxima
+    }
+
     for (const p of posts.slice(0, limit)) {
       const d = p.data;
+      let mediaUrl = null;
 
-    
-      let hlsUrl = null;
-      if (d.preview?.reddit_video_preview) {
-        hlsUrl = d.preview.reddit_video_preview.hls_url;
-      } else if (d.secure_media?.reddit_video?.hls_url) {
-        hlsUrl = d.secure_media.reddit_video.hls_url;
-      }
+      // Videos
+      let hlsUrl = d.preview?.reddit_video_preview?.hls_url || 
+      d.secure_media?.reddit_video?.hls_url;
 
-      
-      let mp4Url = null;
       if (hlsUrl) {
-        mp4Url = await convertAndUpload(hlsUrl, d.title);
+        mediaUrl = await convertAndUpload(hlsUrl, d.title);
+        mediaType = "video";
+      }
+      // Imágenes
+      else if (d.post_hint === 'image' && d.url.match(/\.(jpg|png|gif)$/i)) {
+        mediaUrl = await uploadImage(d.url, d.title);
+        mediaType = "image";
+      }
+      else if (d.gallery_data && d.media_metadata) {
+        const firstImg = Object.values(d.media_metadata)[0];
+        mediaUrl = await uploadImage(firstImg.s.u.replace(/&amp;/g, '&'), d.title);
+        mediaType = "image";
+      }
+      else if (d.preview?.images?.[0]?.source?.url) {
+        mediaUrl = await uploadImage(d.preview.images[0].source.url.replace(/&amp;/g, '&'), d.title);
+        mediaType = "image";
       }
 
-      const { error } = await supabase.from('videosclean').upsert([
-        {
+      if (mediaUrl) {
+        const { error } = await supabase.from('videos').upsert([{
           id: d.name,
           title: d.title,
           subreddit: d.subreddit,
-          url: mp4Url,
-          created_utc: d.created_utc 
-        }
-      ], { onConflict: ['id'] });
+          url: mediaUrl,
+          created_utc: d.created_utc,
+          type: mediaType,
+        }], { onConflict: ['id'] });
 
-      if (error) console.error('Error al insertar en DB:', error);
-      else console.log(`${d.name} insertado con URL MP4:`, mp4Url);
+        if (error) console.error('Error DB:', error);
+        else console.log(`✓ ${d.name}`);
+      }
     }
-
-    console.log('Todos los posts procesados');
   } catch (err) {
-    console.error('Error general:', err);
+    console.error('Error:', err);
   }
 }
 
-
-populateSubreddit('Miinchojg', 5);
+populateSubreddit('BBC_Galore', 20);
