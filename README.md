@@ -99,6 +99,8 @@ Podés usar cualquier otro sistema de almacenamiento si querés, pero este es el
 
 ## Instalación
 
+Primero que todo tenes que tener instalado ffmpeg en tu computadora, aca te dejo un par de tutoriales paso a paso, es re facil y rapido, esto se encarga de convertir videos hls a mp4.
+
 - **Mac:** `brew install ffmpeg`  
 - **Windows:** Guía paso a paso [aquí](https://phoenixnap.com/kb/ffmpeg-windows)  
 - **Linux:** Guía paso a paso [aquí](https://phoenixnap.com/kb/install-ffmpeg-ubuntu)
