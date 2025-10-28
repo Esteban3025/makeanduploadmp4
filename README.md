@@ -14,6 +14,8 @@ You can store the files wherever you want, but by default this is the flow. You 
 
 ## Installation
 
+First of all, you need to have FFmpeg installed on your computer to convert hls videos to mp4.
+
 - Mac: `brew install ffmpeg`
 
 - Windows: Step by Step guide [here](https://phoenixnap.com/kb/ffmpeg-windows)
@@ -158,5 +160,3 @@ node populateRedditVideos.js
 1. **Cambiar los nombres del almacenamiento:**
 
    Podés modificar el nombre del bucket `videosclean` en los archivos `convertAndUpload.js` y `uploadImage.js`.
-
----
