@@ -67,4 +67,4 @@ async function populateSubreddit(subreddit, limit = 10) {
   }
 }
 
-populateSubreddit('gamedevscreens', 5);
+populateSubreddit('ClappingDemCheeks', 10);

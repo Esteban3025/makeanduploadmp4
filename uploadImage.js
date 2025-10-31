@@ -9,7 +9,7 @@ export async function uploadImage(imageUrl, title = 'image') {
     const blob = await response.blob();
 
     const { error: uploadError } = await supabase.storage
-      .from('videosclean') // mismo bucket o crea uno nuevo
+      .from('imagesclean') // mismo bucket o crea uno nuevo
       .upload(fileName, blob, {
         cacheControl: '3600',
         upsert: true,
@@ -19,7 +19,7 @@ export async function uploadImage(imageUrl, title = 'image') {
     if (uploadError) throw uploadError;
 
     const { data } = supabase.storage
-      .from('videosclean')
+      .from('imagesclean')
       .getPublicUrl(fileName);
 
     console.log('Imagen subida:', data.publicUrl);
