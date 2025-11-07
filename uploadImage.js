@@ -1,4 +1,8 @@
-import { supabase } from './supabaseclient.js';
+import  wasabi  from './wasabiclient.js';
+import { PutObjectCommand  } from '@aws-sdk/client-s3';
+
+const BUCKET_NAME = 'imagesclean';
+const WASABI_PUBLIC_URL = `http://s3.us-central-1.wasabisys.com/${BUCKET_NAME}`;
 
 export async function uploadImage(imageUrl, title = 'image') {
   try {
@@ -6,24 +10,23 @@ export async function uploadImage(imageUrl, title = 'image') {
     const fileName = `${sanitizeFilename(title)}_${Date.now()}.jpg`;
 
     const response = await fetch(imageUrl);
-    const blob = await response.blob();
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    const { error: uploadError } = await supabase.storage
-      .from('imagesclean') // mismo bucket o crea uno nuevo
-      .upload(fileName, blob, {
-        cacheControl: '3600',
-        upsert: true,
-        contentType: 'image/jpeg'
-      });
+    const uploadParams = {
+      Bucket: BUCKET_NAME,
+      Key: `images/${fileName}`, // carpeta images
+      Body: buffer,
+      ContentType: 'image/jpeg',
+      ACL: 'public-read',
+    };
 
-    if (uploadError) throw uploadError;
+    await wasabi.send(new PutObjectCommand(uploadParams));
 
-    const { data } = supabase.storage
-      .from('imagesclean')
-      .getPublicUrl(fileName);
+    const publicUrl = `${WASABI_PUBLIC_URL}/images/${fileName}`;
+    console.log('Imagen subida:', publicUrl);
 
-    console.log('Imagen subida:', data.publicUrl);
-    return data.publicUrl;
+    return publicUrl;
   } catch (err) {
     console.error('Error en uploadImage:', err.message);
     return null;

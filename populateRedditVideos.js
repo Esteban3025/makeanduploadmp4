@@ -53,7 +53,7 @@ async function populateSubreddit(subreddit, limit = 10) {
           id: d.name,
           title: d.title,
           subreddit: d.subreddit,
-          url: mediaUrl,
+          key: mediaUrl,
           created_utc: d.created_utc,
           type: mediaType,
         }], { onConflict: ['id'] });
@@ -67,4 +67,4 @@ async function populateSubreddit(subreddit, limit = 10) {
   }
 }
 
-populateSubreddit('ClappingDemCheeks', 10);
+populateSubreddit('ClappingDemCheeks', 5);
