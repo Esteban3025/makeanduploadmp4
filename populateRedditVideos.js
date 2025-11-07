@@ -8,8 +8,8 @@ let mediaType = "";
 async function populateSubreddit(subreddit, limit = 10) {
   try {
     const url = lastPostId 
-    ? `https://www.reddit.com/r/${subreddit}/new.json?limit=${limit}&after=${lastPostId}`
-    : `https://www.reddit.com/r/${subreddit}/new.json?limit=${limit}`;
+    ? `https://www.reddit.com/r/${subreddit}/top/.json?limit=${limit}&after=${lastPostId}&t=week`
+    : `https://www.reddit.com/r/${subreddit}/top/.json?limit=${limit}&t=week`;
     const response = await fetch(url);
     const data = await response.json();
     const posts = data.data.children;
@@ -67,4 +67,6 @@ async function populateSubreddit(subreddit, limit = 10) {
   }
 }
 
+
 populateSubreddit('ClappingDemCheeks', 5);
+
