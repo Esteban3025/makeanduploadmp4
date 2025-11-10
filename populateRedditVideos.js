@@ -1,5 +1,5 @@
-import { convertAndUpload } from './convertAndUpload.js';
-import { uploadImage } from './uploadImage.js';
+// import { convertAndUpload } from './convertAndUpload.js';
+// import { uploadImage } from './uploadImage.js';
 import { supabase } from './supabaseclient.js';
 
 let lastPostId = null;
@@ -21,6 +21,14 @@ async function populateSubreddit(subreddit, limit = 10) {
     for (const p of posts.slice(0, limit)) {
       const d = p.data;
       let mediaUrl = null;
+
+      if (d?.secure_media_embed?.media_domain_url) {
+        mediaUrl = d?.secure_media_embed?.media_domain_url;
+        mediaType = "video"
+      } else {
+        console.log("otro tipo de contenido")
+      }
+      
       // if (d?.url_overridden_by_dest) {
       //   mediaUrl = await convertAndUpload(d.url, d.title);
       //   mediaType = "video";
@@ -49,19 +57,19 @@ async function populateSubreddit(subreddit, limit = 10) {
       // }
       console.log("mediaurl", mediaUrl);
 
-      // if (mediaUrl) {
-      //   const { error } = await supabase.from('videos').upsert([{
-      //     id: d.name,
-      //     title: d.title,
-      //     subreddit: d.subreddit,
-      //     key: mediaUrl,
-      //     created_utc: d.created_utc,
-      //     type: mediaType,
-      //   }], { onConflict: ['id'] });
+      if (mediaUrl) {
+        const { error } = await supabase.from('videos').upsert([{
+          id: d.name,
+          title: d.title,
+          subreddit: d.subreddit,
+          url: mediaUrl,
+          created_utc: d.created_utc,
+          type: mediaType,
+        }], { onConflict: ['id'] });
 
-      //   if (error) console.error('Error DB:', error);
-      //   else console.log(`✓ ${d.name}`);
-      // }
+        if (error) console.error('Error DB:', error);
+        else console.log(`✓ ${d.name}`);
+      }
     }
   } catch (err) {
     console.error('Error:', err);
@@ -69,5 +77,5 @@ async function populateSubreddit(subreddit, limit = 10) {
 }
 
 
-populateSubreddit('ClappingDemCheeks', 5);
+populateSubreddit('BLACKEDPawgs', 2);
 
