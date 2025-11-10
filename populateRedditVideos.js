@@ -77,5 +77,5 @@ async function populateSubreddit(subreddit, limit = 10) {
 }
 
 
-populateSubreddit('BLACKEDPawgs', 2);
+populateSubreddit('tiktokthots', 10);
 
