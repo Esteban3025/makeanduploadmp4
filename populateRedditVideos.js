@@ -21,46 +21,47 @@ async function populateSubreddit(subreddit, limit = 10) {
     for (const p of posts.slice(0, limit)) {
       const d = p.data;
       let mediaUrl = null;
-      if (d?.url_overridden_by_dest) {
-        mediaUrl = await convertAndUpload(d.url, d.title);
-        mediaType = "video";
-      }
+      // if (d?.url_overridden_by_dest) {
+      //   mediaUrl = await convertAndUpload(d.url, d.title);
+      //   mediaType = "video";
+      // }
 
-      else if (d.preview?.reddit_video_preview?.hls_url || d.secure_media?.reddit_video?.hls_url) {
-        const hlsUrl = d.preview?.reddit_video_preview?.hls_url || d.secure_media?.reddit_video?.hls_url;
-        mediaUrl = await convertAndUpload(hlsUrl, d.title);
-        mediaType = "video";
-      }
+      // else if (d.preview?.reddit_video_preview?.hls_url || d.secure_media?.reddit_video?.hls_url) {
+      //   const hlsUrl = d.preview?.reddit_video_preview?.hls_url || d.secure_media?.reddit_video?.hls_url;
+      //   mediaUrl = await convertAndUpload(hlsUrl, d.title);
+      //   mediaType = "video";
+      // }
 
-      else if (d.post_hint === 'image' && d.url.match(/\.(jpg|png|gif)$/i)) {
-        mediaUrl = await uploadImage(d.url, d.title);
-        mediaType = "image";
-      }
+      // else if (d.post_hint === 'image' && d.url.match(/\.(jpg|png|gif)$/i)) {
+      //   mediaUrl = await uploadImage(d.url, d.title);
+      //   mediaType = "image";
+      // }
 
-      else if (d.gallery_data && d.media_metadata) {
-        const firstImg = Object.values(d.media_metadata)[0];
-        mediaUrl = await uploadImage(firstImg.s.u.replace(/&amp;/g, '&'), d.title);
-        mediaType = "image";
-      }
+      // else if (d.gallery_data && d.media_metadata) {
+      //   const firstImg = Object.values(d.media_metadata)[0];
+      //   mediaUrl = await uploadImage(firstImg.s.u.replace(/&amp;/g, '&'), d.title);
+      //   mediaType = "image";
+      // }
 
-      else if (d.preview?.images?.[0]?.source?.url) {
-        mediaUrl = await uploadImage(d.preview.images[0].source.url.replace(/&amp;/g, '&'), d.title);
-        mediaType = "image";
-      }
+      // else if (d.preview?.images?.[0]?.source?.url) {
+      //   mediaUrl = await uploadImage(d.preview.images[0].source.url.replace(/&amp;/g, '&'), d.title);
+      //   mediaType = "image";
+      // }
+      console.log("mediaurl", mediaUrl);
 
-      if (mediaUrl) {
-        const { error } = await supabase.from('videos').upsert([{
-          id: d.name,
-          title: d.title,
-          subreddit: d.subreddit,
-          key: mediaUrl,
-          created_utc: d.created_utc,
-          type: mediaType,
-        }], { onConflict: ['id'] });
+      // if (mediaUrl) {
+      //   const { error } = await supabase.from('videos').upsert([{
+      //     id: d.name,
+      //     title: d.title,
+      //     subreddit: d.subreddit,
+      //     key: mediaUrl,
+      //     created_utc: d.created_utc,
+      //     type: mediaType,
+      //   }], { onConflict: ['id'] });
 
-        if (error) console.error('Error DB:', error);
-        else console.log(`✓ ${d.name}`);
-      }
+      //   if (error) console.error('Error DB:', error);
+      //   else console.log(`✓ ${d.name}`);
+      // }
     }
   } catch (err) {
     console.error('Error:', err);

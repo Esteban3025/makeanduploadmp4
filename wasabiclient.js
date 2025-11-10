@@ -5,7 +5,7 @@ dotenv.config();
 
 const wasabi = new S3Client({
   endpoint: 'http://s3.us-central-1.wasabisys.com/',
-  region: 'us-central-1', 
+  region: 'us-central-1',
   credentials: {
     accessKeyId: process.env.WASABI_ACCESS_KEY,
     secretAccessKey: process.env.WASABI_SECRET_KEY,

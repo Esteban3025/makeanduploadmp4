@@ -26,19 +26,19 @@ export async function convertAndUpload(hlsUrl, title = 'video') {
 
     console.log('Conversión completada:', tempPath);
 
-    const fileContent = fs.readFileSync(tempPath);
-    const uploadParams = {
-      Bucket: BUCKET_NAME,
-      Key: `videos/${fileName}`, // carpeta videos
-      Body: fileContent,
-      ContentType: 'video/mp4',
-      ACL: 'public-read', // hacer público
-    };
+    // const fileContent = fs.readFileSync(tempPath);
+    // const uploadParams = {
+    //   Bucket: BUCKET_NAME,
+    //   Key: `videos/${fileName}`, // carpeta videos
+    //   Body: fileContent,
+    //   ContentType: 'video/mp4',
+    //   ACL: 'public-read', // hacer público
+    // };
 
-    await wasabi.send(new PutObjectCommand(uploadParams));
+    // await wasabi.send(new PutObjectCommand(uploadParams));
 
-    const publicUrl = `${WASABI_PUBLIC_URL}/videos/${fileName}`;
-    console.log('URL pública:', publicUrl);
+    // const publicUrl = `${WASABI_PUBLIC_URL}/videos/${fileName}`;
+    // console.log('URL pública:', publicUrl);
 
     fs.unlinkSync(tempPath);
 
