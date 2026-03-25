@@ -1,11 +1,6 @@
 import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import  wasabi  from './wasabiclient.js';
-import { PutObjectCommand  } from '@aws-sdk/client-s3';
-
-const BUCKET_NAME = 'videosclean';
-const WASABI_PUBLIC_URL = `http://s3.us-central-1.wasabisys.com/${BUCKET_NAME}`;
 
 export async function convertAndUpload(hlsUrl, title = 'video') {
   try {
@@ -26,23 +21,23 @@ export async function convertAndUpload(hlsUrl, title = 'video') {
 
     console.log('Conversión completada:', tempPath);
 
-    const fileContent = fs.readFileSync(tempPath);
-    const uploadParams = {
-      Bucket: BUCKET_NAME,
-      Key: `videos/${fileName}`, // carpeta videos
-      Body: fileContent,
-      ContentType: 'video/mp4',
-      ACL: 'public-read', // hacer público
-    };
+    // const fileContent = fs.readFileSync(tempPath);
+    // const uploadParams = {
+    //   Bucket: BUCKET_NAME,
+    //   Key: `videos/${fileName}`, // carpeta videos
+    //   Body: fileContent,
+    //   ContentType: 'video/mp4',
+    //   ACL: 'public-read', // hacer público
+    // };
 
-    await wasabi.send(new PutObjectCommand(uploadParams));
+    // await wasabi.send(new PutObjectCommand(uploadParams));
 
-    const publicUrl = `${WASABI_PUBLIC_URL}/videos/${fileName}`;
-    console.log('URL pública:', publicUrl);
+    // const publicUrl = `${WASABI_PUBLIC_URL}/videos/${fileName}`;
+    // console.log('URL pública:', publicUrl);
 
-    fs.unlinkSync(tempPath);
+    // fs.unlinkSync(tempPath);
 
-    return publicUrl;
+    // return publicUrl;
   } catch (err) {
     console.error('Error en convertAndUpload:', err.message);
     return null;

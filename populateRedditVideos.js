@@ -1,9 +1,8 @@
 import { convertAndUpload } from './convertAndUpload.js';
-import { uploadImage } from './uploadImage.js';
-import { supabase } from './supabaseclient.js';
+// import { uploadImage } from './uploadImage.js';
+// import { supabase } from './supabaseclient.js';
 
 let lastPostId = null;
-let mediaType = "";
 
 async function populateSubreddit(subreddit, limit = 10) {
   try {
@@ -18,50 +17,64 @@ async function populateSubreddit(subreddit, limit = 10) {
       lastPostId = data.data.after; // guarda para la próxima
     }
 
-    for (const p of posts.slice(0, limit)) {
-      const d = p.data;
-      let mediaUrl = null;
-      if (d?.url_overridden_by_dest) {
-        mediaUrl = await convertAndUpload(d.url, d.title);
-        mediaType = "video";
-      }
+    posts.map(e => {
+      let data = e.data;
+      let arrayOfTitles = [];
+      let arrayOfUrls = [];
 
-      else if (d.preview?.reddit_video_preview?.hls_url || d.secure_media?.reddit_video?.hls_url) {
-        const hlsUrl = d.preview?.reddit_video_preview?.hls_url || d.secure_media?.reddit_video?.hls_url;
-        mediaUrl = await convertAndUpload(hlsUrl, d.title);
-        mediaType = "video";
-      }
+      arrayOfTitles.push(data.title);
+      arrayOfUrls.push(data?.url_overridden_by_dest);
 
-      else if (d.post_hint === 'image' && d.url.match(/\.(jpg|png|gif)$/i)) {
-        mediaUrl = await uploadImage(d.url, d.title);
-        mediaType = "image";
+      for (let i = 0; i < arrayOfTitles.length; i++) {
+        console.log("Title: ", arrayOfTitles[i], " Url: ", arrayOfUrls[i]);
+        convertAndUpload(arrayOfUrls[i], arrayOfTitles[i]);
       }
+    })
 
-      else if (d.gallery_data && d.media_metadata) {
-        const firstImg = Object.values(d.media_metadata)[0];
-        mediaUrl = await uploadImage(firstImg.s.u.replace(/&amp;/g, '&'), d.title);
-        mediaType = "image";
-      }
+    // for (const p of posts.slice(0, limit)) {
+    //   const d = p.data;
+    //   let mediaUrl = null;
+    //   if (d?.url_overridden_by_dest) {
+    //     mediaUrl = await convertAndUpload(d.url, d.title);
+    //     mediaType = "video";
+    //   }
 
-      else if (d.preview?.images?.[0]?.source?.url) {
-        mediaUrl = await uploadImage(d.preview.images[0].source.url.replace(/&amp;/g, '&'), d.title);
-        mediaType = "image";
-      }
+    //   else if (d.preview?.reddit_video_preview?.hls_url || d.secure_media?.reddit_video?.hls_url) {
+    //     const hlsUrl = d.preview?.reddit_video_preview?.hls_url || d.secure_media?.reddit_video?.hls_url;
+    //     mediaUrl = await convertAndUpload(hlsUrl, d.title);
+    //     mediaType = "video";
+    //   }
 
-      if (mediaUrl) {
-        const { error } = await supabase.from('videos').upsert([{
-          id: d.name,
-          title: d.title,
-          subreddit: d.subreddit,
-          key: mediaUrl,
-          created_utc: d.created_utc,
-          type: mediaType,
-        }], { onConflict: ['id'] });
+    //   else if (d.post_hint === 'image' && d.url.match(/\.(jpg|png|gif)$/i)) {
+    //     mediaUrl = await uploadImage(d.url, d.title);
+    //     mediaType = "image";
+    //   }
 
-        if (error) console.error('Error DB:', error);
-        else console.log(`✓ ${d.name}`);
-      }
-    }
+    //   else if (d.gallery_data && d.media_metadata) {
+    //     const firstImg = Object.values(d.media_metadata)[0];
+    //     mediaUrl = await uploadImage(firstImg.s.u.replace(/&amp;/g, '&'), d.title);
+    //     mediaType = "image";
+    //   }
+
+    //   else if (d.preview?.images?.[0]?.source?.url) {
+    //     mediaUrl = await uploadImage(d.preview.images[0].source.url.replace(/&amp;/g, '&'), d.title);
+    //     mediaType = "image";
+    //   }
+
+    //   if (mediaUrl) {
+    //     // const { error } = await supabase.from('videos').upsert([{
+    //     //   id: d.name,
+    //     //   title: d.title,
+    //     //   subreddit: d.subreddit,
+    //     //   key: mediaUrl,
+    //     //   created_utc: d.created_utc,
+    //     //   type: mediaType,
+    //     // }], { onConflict: ['id'] });
+
+    //     if (error) console.error('Error DB:', error);
+    //     else console.log(`✓ ${d.name}`);
+    //   }
+    // }
   } catch (err) {
     console.error('Error:', err);
   }
