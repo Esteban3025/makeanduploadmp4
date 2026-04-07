@@ -2,7 +2,7 @@ import { convertAndUpload } from './convertAndUpload.js';
 
 let lastPostId = null;
 
-populateSubreddit('ClappingDemCheeks');
+populateSubreddit('Paraguay');
 
 async function populateSubreddit(subreddit, limit = 10) { // podes toquetear el limite bajo tu propio riesgo
   try {
