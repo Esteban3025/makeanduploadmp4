@@ -6,8 +6,8 @@ export async function convertAndUpload(hlsUrl, title = 'video') {
   try {
     const tmpDir = path.join('./tmp');
     if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir);
-    const sanitizeFilename = (title) => title.replace(/[^a-z0-9_*\-]/gi, '_');
-    const fileName = `${sanitizeFilename(title)}_${Date.now()}.mp4`;
+    // const sanitizeFilename = (title) => title.replace(/[^a-z0-9_*\-]/gi, '_');
+    const fileName = `${title}.mp4`;
     const tempPath = path.join(tmpDir, fileName);
 
     await new Promise((resolve, reject) => {
