@@ -4,10 +4,14 @@ import fs from 'node:fs/promises';
 let after = null;
 let afterFileExist = null;
 
+<<<<<<< HEAD
 populateSubreddit('Paraguay', 5);
 
 async function populateSubreddit(subreddit, limit = 15) { // podes toquetear el limite bajo tu propio riesgo
   let lastPostId;
+=======
+populateSubreddit('Paraguay');
+>>>>>>> 78a6f33179c9d06a900d6b3b2aa71842c93184aa
 
   try {
     await fs.access('./tmp/after.txt');
